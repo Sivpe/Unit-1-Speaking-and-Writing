@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Speaking and Writing Quiz - Sports Center and Skateboarding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#eef4f1; --surface:#ffffff; --surface2:#f4f8f6; --ink:#152420; --muted:#5a6d66;
+        --line:#d5e2dc; --brand:#0b6e4f; --brand-ink:#ffffff; --brand-soft:#e2f2ea;
+        --accent:#e8622c; --accent-soft:#fdeee6; --good:#177245; --good-bg:#e3f4e9;
+        --bad:#b3261e; --bad-bg:#fbe9e7; --warn:#9a6206; --warn-bg:#fdf3d7;
+        --shadow:0 2px 10px rgba(16,42,33,.08);
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#0e1512; --surface:#18211c; --surface2:#1f2a24; --ink:#e7f0eb; --muted:#9db3a8;
+          --line:#2c3d34; --brand:#2fae7d; --brand-ink:#08130d; --brand-soft:#173328;
+          --accent:#ff8a50; --accent-soft:#3a2417; --good:#5fd598; --good-bg:#173528;
+          --bad:#ff9a92; --bad-bg:#3d1d1a; --warn:#f2c14e; --warn-bg:#38300f;
+          --shadow:0 2px 10px rgba(0,0,0,.35);
+        }
+      }
+      *{box-sizing:border-box}
+      html{-webkit-text-size-adjust:100%}
+      body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16.5px;line-height:1.5}
+      h1,h2,h3{font-family:"Archivo","Nunito",sans-serif;line-height:1.2;margin:0}
+      button{font:inherit;cursor:pointer}
+      input,select,textarea{font:inherit;color:var(--ink)}
+      :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+      .topbar{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+      .topbar-in{max-width:880px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+      .topbar .t{font-family:"Archivo",sans-serif;font-weight:800;font-size:15px;letter-spacing:.01em}
+      .topbar .sp{flex:1}
+      .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:4px 12px;font-weight:800;font-size:14px;white-space:nowrap}
+      .chip.timer.danger{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+      .chip.timer.warn5{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+
+      main{max-width:880px;margin:0 auto;padding:18px 16px 64px}
+      .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px;margin-bottom:18px}
+      .muted{color:var(--muted)}
+      .small{font-size:14px}
+
+      /* Gate */
+      #gate h1{font-size:26px;margin-bottom:6px}
+      .gate-rules{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+      .gate-rules div{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center}
+      .gate-rules b{display:block;font-size:20px;font-family:"Archivo",sans-serif}
+      .gate-rules span{font-size:13px;color:var(--muted);font-weight:700}
+      label.flabel{display:block;font-weight:800;margin:14px 0 6px}
+      input[type=text],input[type=password],input[type=url]{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--surface)}
+      input[type=text]:focus,input[type=password]:focus,input[type=url]:focus{border-color:var(--brand);outline:none}
+      .btn{display:inline-block;border:none;border-radius:10px;padding:13px 22px;font-weight:800;font-size:16px;background:var(--brand);color:var(--brand-ink);box-shadow:var(--shadow)}
+      .btn:active{transform:translateY(1px)}
+      .btn.secondary{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+      .btn.accent{background:var(--accent);color:#fff}
+      .btn:disabled{opacity:.55;cursor:not-allowed}
+      .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+      .err{color:var(--bad);font-weight:700;margin-top:8px;min-height:1.2em}
+
+      /* Warning banner */
+      #warnBanner{background:var(--warn-bg);border:1.5px solid var(--warn);color:var(--warn);border-radius:10px;padding:10px 14px;font-weight:800;margin-bottom:14px;text-align:center}
+      #warnBanner[hidden]{display:none}
+
+      /* Part headers */
+      .part-head{display:flex;align-items:baseline;gap:10px;margin:26px 0 12px;flex-wrap:wrap}
+      .part-head h2{font-size:23px}
+      .part-head .pts{margin-left:auto;font-weight:800;color:var(--brand);background:var(--brand-soft);border-radius:999px;padding:3px 12px;font-size:14px}
+      .part-head:first-child{margin-top:4px}
+
+      /* Context panels */
+      .flier{background:linear-gradient(160deg,#ffd94d,#ffb62e);color:#33270a;border-radius:12px;padding:16px 18px;border:2px dashed #b57f10}
+      .flier h3{font-size:19px;letter-spacing:.02em;text-transform:uppercase}
+      .flier ul{margin:8px 0 0;padding-left:20px}
+      .convo{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+      .convo p{margin:7px 0}
+      .convo .who{font-weight:800;color:var(--brand)}
+      .gapno{display:inline-block;min-width:1.7em;text-align:center;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);border-radius:6px;font-weight:800;padding:0 4px;font-size:.92em}
+      .article p{margin:0 0 12px}
+      .article .plabel{display:inline-block;font-weight:800;background:var(--brand);color:var(--brand-ink);border-radius:6px;padding:0 8px;margin-right:8px;font-family:"Archivo",sans-serif}
+      .phrasebank{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+      .phrasebank span{background:var(--brand-soft);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-weight:700;font-size:14.5px}
+
+      /* Question sections */
+      .sec-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+      .sec-head h3{font-size:19px}
+      .sec-head .spts{margin-left:auto;font-weight:800;font-size:13.5px;color:var(--muted);white-space:nowrap}
+      .sec-sub{color:var(--muted);font-size:15px;margin:2px 0 12px}
+      .q{border-top:1px solid var(--line);padding:13px 0}
+      .q:first-of-type{border-top:none}
+      .qtext{font-weight:700;margin-bottom:9px}
+      .qtext .qn{color:var(--brand);font-family:"Archivo",sans-serif;margin-right:6px}
+      .opts{display:grid;gap:8px}
+      .opt{display:flex;gap:10px;align-items:flex-start;background:var(--surface2);border:2px solid var(--line);border-radius:10px;padding:10px 13px;cursor:pointer;font-weight:600}
+      .opt input{margin-top:4px;accent-color:var(--brand);width:18px;height:18px;flex:none}
+      .opt:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}
+      .opt.correct{border-color:var(--good);background:var(--good-bg)}
+      .opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+      select.qsel{width:100%;max-width:420px;padding:10px 12px;border:2px solid var(--line);border-radius:10px;background:var(--surface);font-weight:600}
+      select.qsel.answered{border-color:var(--brand)}
+      select.qsel.correct{border-color:var(--good);background:var(--good-bg)}
+      select.qsel.wrong{border-color:var(--bad);background:var(--bad-bg)}
+      .feedback{margin-top:8px;font-weight:800;font-size:14.5px;display:none}
+      .feedback.show{display:block}
+      .feedback .ok{color:var(--good)}
+      .feedback .no{color:var(--bad)}
+      .feedback .ans{color:var(--ink)}
+
+      /* Free writing (W7) */
+      textarea.qtext{width:100%;min-height:170px;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--surface);resize:vertical;line-height:1.55}
+      textarea.qtext:focus{border-color:var(--brand);outline:none}
+      .wcount{font-weight:800;margin-top:8px;font-size:15px}
+      .wcount.warn{color:var(--bad)}
+      .wcount.okc{color:var(--good)}
+      .rules{background:var(--brand-soft);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-top:14px}
+      .rules ul{margin:6px 0 0;padding-left:20px}
+      .rules li{margin:4px 0}
+      .para-echo{margin-top:10px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-weight:600;white-space:pre-wrap;word-break:break-word}
+
+      .submitbar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px;margin:22px -16px -64px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+      .submitbar .prog{font-weight:800}
+
+      /* Results */
+      #results .big{font-family:"Archivo",sans-serif;font-size:52px;font-weight:800;line-height:1}
+      .band{display:inline-block;margin-top:8px;font-weight:800;border-radius:999px;padding:4px 14px;background:var(--brand-soft);color:var(--brand)}
+      .breakdown{display:grid;gap:12px;margin-top:16px}
+      .brow{display:grid;grid-template-columns:110px 1fr 74px;gap:10px;align-items:center;font-weight:800}
+      .bar{height:14px;background:var(--surface2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+      .bar i{display:block;height:100%;background:var(--brand);width:0;transition:width .8s ease}
+      .bar.w i{background:var(--accent)}
+      .dispatch{margin-top:14px;border-radius:10px;padding:10px 14px;font-weight:700;background:var(--surface2);border:1px solid var(--line)}
+      .dispatch.ok{background:var(--good-bg)}
+      .dispatch.fail{background:var(--bad-bg)}
+
+      /* Teacher */
+      .teacher-zone{margin-top:30px;border-top:2px dashed var(--line);padding-top:16px}
+      #teacherPanel h3{font-size:19px;margin-bottom:8px}
+      #teacherPanel h4{margin:18px 0 6px;font-size:16px}
+      .keylist{margin:0;padding-left:20px}
+      .keylist li{margin:4px 0}
+      .note{background:var(--warn-bg);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;margin:12px 0;font-weight:600}
+      .tlink{background:none;border:none;color:var(--muted);font-weight:700;text-decoration:underline;padding:6px 0}
+
+      /* Modal */
+      .overlay{position:fixed;inset:0;background:rgba(8,18,13,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:80}
+      .overlay[hidden]{display:none}
+      .modal{background:var(--surface);border-radius:14px;padding:22px;max-width:440px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+      .modal h3{font-size:20px;margin-bottom:8px}
+      #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:800;z-index:90;box-shadow:var(--shadow)}
+      #toast[hidden]{display:none}
+
+      @media (max-width:560px){
+        .gate-rules{grid-template-columns:1fr 1fr 1fr;gap:6px}
+        .gate-rules b{font-size:16px}
+        .brow{grid-template-columns:84px 1fr 62px;font-size:14.5px}
+        #results .big{font-size:42px}
+        .card{padding:16px}
+      }
+      @media print{
+        .topbar,.submitbar,#gate,#quiz .card,#results,.teacher-zone .tlink,#pwOverlay,#confirmOverlay,#toast{display:none !important}
+        #teacherPanel{display:block !important;border:none;box-shadow:none}
+        body{background:#fff}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-in">
+        <span class="t">Speaking &amp; Writing Quiz · Go Beyond 4 · Unit 1</span>
+        <span class="sp"></span>
+        <span class="chip" id="answeredChip" hidden>Answered 0 / 50</span>
+        <span class="chip timer" id="timerChip" hidden>⏱ 30:00</span>
+      </div>
+    </div>
+
+    <main>
+      <!-- ============ NAME GATE ============ -->
+      <section class="card" id="gate">
+        <h1>At the Sports Center &amp; History of a Sport</h1>
+        <p class="muted">Speaking (pages 13) and Writing (page 14) quiz. All questions are <b>typing / choosing</b> — there is no speaking or recording in this quiz. Read the flier, the conversation and the skateboarding article on the page, then answer.</p>
+        <div class="gate-rules">
+          <div><b>100</b><span>total points</span></div>
+          <div><b>50 + 50</b><span>Speaking + Writing</span></div>
+          <div><b>30 min</b><span>timer — auto-submit</span></div>
+        </div>
+        <label class="flabel" for="studentName">Your full name</label>
+        <input type="text" id="studentName" placeholder="e.g. Sok Dara" autocomplete="name" />
+        <div class="err" id="nameErr"></div>
+        <div class="btnrow">
+          <button class="btn" id="startBtn" type="button">Start the quiz</button>
+        </div>
+        <p class="small muted" style="margin-top:14px">The 30-minute timer starts when you press Start. When 5 minutes are left, you will see a warning. When time runs out, your answers are submitted automatically.</p>
+      </section>
+
+      <div id="warnBanner" hidden>⚠ Only 5 minutes left! Finish your answers — the quiz will submit automatically at 0:00.</div>
+
+      <!-- ============ QUIZ ============ -->
+      <div id="quiz" hidden>
+        <div class="part-head">
+          <h2>Part 1 · Speaking — At the sports center</h2>
+          <span class="pts">50 points</span>
+        </div>
+
+        <div class="card">
+          <div class="flier">
+            <h3>Gatestown Sports Center</h3>
+            <p style="margin:6px 0 0"><b>Rock climbing classes</b></p>
+            <ul>
+              <li>Sign up for one of our rock climbing classes with an <b>experienced instructor</b>.</li>
+              <li>We offer a <b>one-day introductory class</b>, plus <b>two-day</b> and <b>four-day</b> classes.</li>
+              <li>All classes are good for <b>complete beginners</b> and for those with indoor climbing experience.</li>
+              <li>One-day class: full price <b>$90</b>. Sports center members get <b>20% off</b>.</li>
+            </ul>
+          </div>
+          <h3 style="margin:18px 0 8px">The conversation — Kyle and Pam</h3>
+          <div class="convo">
+            <p><span class="who">Kyle:</span> Hi. <span class="gapno">(1) ______</span> rock climbing?</p>
+            <p><span class="who">Pam:</span> Yes, I mean, I’m thinking of taking a class.</p>
+            <p><span class="who">Kyle:</span> <span class="gapno">(2) ______</span> members of the sports center get a discount?</p>
+            <p><span class="who">Pam:</span> No, I didn’t. But how do I decide which class to choose?</p>
+            <p><span class="who">Kyle:</span> If you don’t have any experience, you could try the one-day introductory class. You do some basic climbing and learn something about using ropes.</p>
+            <p><span class="who">Pam:</span> And do I need to buy any equipment?</p>
+            <p><span class="who">Kyle:</span> No, the price includes all the climbing equipment and the instruction.</p>
+            <p><span class="who">Pam:</span> All right. And how much does it cost?</p>
+            <p><span class="who">Kyle:</span> The one-day class is $90, but with the 20 percent discount it’s $72.</p>
+            <p><span class="who">Pam:</span> OK. Sounds good. So what do I have to do?</p>
+            <p><span class="who">Kyle:</span> Choose your dates and fill out a registration form.</p>
+            <p><span class="who">Pam:</span> <span class="gapno">(5) ______</span>! That’s my bus. I have to go. Nice talking to you. <span class="gapno">(6) ______</span>, what’s the instructor like?</p>
+            <p><span class="who">Kyle:</span> You’re looking at him. See you in class!</p>
+          </div>
+          <h3 style="margin:18px 0 4px">Phrasebook</h3>
+          <p class="small muted" style="margin:0">Starting a new topic · Changing the topic · Ending the conversation</p>
+          <div class="phrasebank">
+            <span>Are you interested in …?</span><span>Did you know that …?</span><span>Oh, look!</span>
+            <span>That reminds me, …</span><span>Speaking of …</span><span>By the way, …</span>
+            <span>I have to go.</span><span>Nice talking to you.</span>
+          </div>
+        </div>
+
+        <div id="speakingSections"></div>
+
+        <div class="part-head">
+          <h2>Part 2 · Writing — History of a sport</h2>
+          <span class="pts">50 points</span>
+        </div>
+
+        <div class="card article">
+          <h3 style="margin-bottom:12px">The history of skateboarding — the five paragraphs (a–e)</h3>
+          <p><span class="plabel">a</span>Another famous name is Alan Gelfand who created the “ollie,” the first trick people learn when skateboarding.</p>
+          <p><span class="plabel">b</span>The first skateboarding competition was held in 1963, but it wasn’t until the 1970s that the sport became popular.</p>
+          <p><span class="plabel">c</span>Today, skateboarding is extremely popular, but it can also be dangerous. At one point, the use and sale of skateboards were banned in Norway!</p>
+          <p><span class="plabel">d</span>Most people say skateboarding started in California, USA, in the 1950s, when surfing was popular. The surfers wanted to find a way to surf on the pavement after they came out of the water.</p>
+          <p style="margin-bottom:0"><span class="plabel">e</span>This popularity was largely due to the Z-Boys, a group of surfers from a poor area of Los Angeles. They used the sides of empty swimming pools to skateboard, and the sport became faster and more exciting.</p>
+        </div>
+
+        <div id="writingSections"></div>
+
+        <div class="submitbar">
+          <span class="prog" id="submitProg">Answered 0 / 50</span>
+          <span style="flex:1"></span>
+          <button class="btn accent" id="submitBtn" type="button">Finish &amp; submit</button>
+        </div>
+      </div>
+
+      <!-- ============ RESULTS ============ -->
+      <section class="card" id="results" hidden>
+        <h2>Your result</h2>
+        <p class="muted" id="resultName" style="margin:6px 0 0"></p>
+        <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:10px">
+          <span class="big" id="totalScore">0</span>
+          <span style="font-weight:800;font-size:20px">/ 100</span>
+          <span class="band" id="bandLabel"></span>
+        </div>
+        <div class="breakdown">
+          <div class="brow"><span>Speaking</span><div class="bar"><i id="barS"></i></div><span id="scoreS">0 / 50</span></div>
+          <div class="brow"><span>Writing</span><div class="bar w"><i id="barW"></i></div><span id="scoreW">0 / 50</span></div>
+        </div>
+        <p class="small muted" id="timeUsedLine" style="margin-top:12px"></p>
+        <div id="w7Review" hidden style="margin-top:16px">
+          <h3 style="font-size:17px;margin-bottom:4px">Your W7 paragraph</h3>
+          <p class="small muted" id="w7Meta" style="margin:0"></p>
+          <div class="para-echo" id="w7Echo"></div>
+        </div>
+        <div class="dispatch" id="dispatchNote">Sending your result…</div>
+        <div class="btnrow">
+          <button class="btn" id="copyBtn" type="button">Copy my result</button>
+          <button class="btn secondary" id="downloadBtn" type="button">Download my result</button>
+          <button class="btn secondary" id="restartBtn" type="button">Start again</button>
+        </div>
+        <p class="small muted" style="margin-top:12px">Scroll down to check every answer — correct answers are shown in green, yours in red where they differ.</p>
+      </section>
+
+      <!-- ============ TEACHER ============ -->
+      <div class="teacher-zone">
+        <button class="tlink" id="teacherBtn" type="button">Teacher mode</button>
+        <section class="card" id="teacherPanel" hidden>
+          <h3>Teacher panel</h3>
+          <p class="small muted">Full answer key for the Speaking &amp; Writing Quiz — At the Sports Center / History of a Sport (Go Beyond 4, Unit 1, pp. 13–14). Use your browser’s print to print this key.</p>
+
+          <h4>Score sheet connection</h4>
+          <label class="flabel" for="sheetUrlInput">Apps Script URL (override — leave as set to use the saved default)</label>
+          <input type="url" id="sheetUrlInput" />
+          <div class="btnrow">
+            <button class="btn secondary" id="saveSheetBtn" type="button">Use this URL for new submissions</button>
+          </div>
+          <div class="note">Sheet columns: the <b>Speaking</b> score is sent in the sheet’s <b>Vocabulary</b> column and the <b>Writing</b> score in the <b>Reading</b> column (the established convention for these quizzes). The Quiz name — “Speaking and Writing Quiz - At the Sports Center” — identifies the row. The page can only confirm a result was <b>dispatched</b>; check the sheet itself to confirm a row landed.</div>
+          <div class="note">Answer-key note: in Speaking S2 gap (6) the book key is <b>“By the way.”</b> “That reminds me” is also natural English there, but it is a distractor in this quiz and is marked wrong, matching the book key.</div>
+          <div class="note">W7 (Write your paragraph, 10 pts) is auto-checked by simple rules only — length, history word-bank words, and a year/decade mention. Read the paragraph itself in the student's downloaded result if you want to judge the writing quality. The paragraph text is also sent to the sheet with every submission (the <b>writingText</b> field).</div>
+
+          <h4>Answer key</h4>
+          <div id="answerKey"></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Password modal -->
+    <div class="overlay" id="pwOverlay" hidden>
+      <div class="modal">
+        <h3>Teacher mode</h3>
+        <p class="muted small">Enter the teacher password to see the answer key.</p>
+        <label class="flabel" for="pwInput">Password</label>
+        <input type="password" id="pwInput" autocomplete="off" />
+        <div class="err" id="pwErr"></div>
+        <div class="btnrow">
+          <button class="btn" id="pwGo" type="button">Open teacher panel</button>
+          <button class="btn secondary" id="pwCancel" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm submit modal -->
+    <div class="overlay" id="confirmOverlay" hidden>
+      <div class="modal">
+        <h3>Submit your quiz?</h3>
+        <p class="muted" id="confirmText">You have answered all questions.</p>
+        <div class="btnrow">
+          <button class="btn accent" id="confirmYes" type="button">Yes, submit</button>
+          <button class="btn secondary" id="confirmNo" type="button">Keep working</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" hidden></div>
+
+    <script>
+    "use strict";
+    var DEFAULT_SHEET_URL = "https://script.google.com/macros/s/AKfycbzKkEN07Sz6K29S8clVQAKH-Nj231zOZhAgk2npaKoKlzTJh-q-nazIR5usPO9euPSo/exec";
+    var QUIZ_NAME = "Speaking and Writing Quiz - At the Sports Center";
+    var TEACHER_PASSWORD = "9Ateacher";
+    var sheetUrl = DEFAULT_SHEET_URL;
+
+    var PHRASES = ["Are you interested in", "Did you know that", "That reminds me", "Speaking of", "By the way", "Oh, look"];
+    var NUMS = ["1", "2", "3", "4", "5"];
+    var JOBS = ["Starting a new topic", "Changing the topic", "Ending the conversation"];
+    var LETTERS = ["a", "b", "c", "d", "e"];
+
+    /* kind: "mcq" (radio options, ans = index) or "sel" (dropdown, ans = value string) */
+    var SECTIONS = [
+      { id:"s1", part:"speaking", code:"S1", title:"Flier facts", max:6,
+        sub:"Look at the Gatestown Sports Center flier and choose the correct answer.",
+        items:[
+          { q:"How many rock climbing classes are there?", kind:"mcq", pts:2, opts:["2","3","4"], ans:1 },
+          { q:"Which class is best for someone with no experience?", kind:"mcq", pts:2, opts:["The two-day class","The one-day introductory class","The four-day class"], ans:1 },
+          { q:"The one-day class costs $90 at full price. How much does it cost with the 20 percent discount?", kind:"mcq", pts:2, opts:["$70","$72","$80"], ans:1 }
+        ]},
+      { id:"s2", part:"speaking", code:"S2", title:"Complete the conversation", max:8,
+        sub:"Choose the correct phrase for each gap in the Kyle and Pam conversation.",
+        items:[
+          { q:"(1) Kyle: “Hi. ______ rock climbing?”", kind:"mcq", pts:2, opts:["Are you interested in","Did you know that","By the way","Speaking of"], ans:0 },
+          { q:"(2) Kyle: “______ members of the sports center get a discount?”", kind:"mcq", pts:2, opts:["Are you interested in","Oh, look","Did you know that","That reminds me"], ans:2 },
+          { q:"(5) Pam: “______ ! That’s my bus. I have to go.”", kind:"mcq", pts:2, opts:["By the way","Oh, look","Speaking of","Did you know that"], ans:1 },
+          { q:"(6) Pam: “______ , what’s the instructor like?”", kind:"mcq", pts:2, opts:["That reminds me","Oh, look","Are you interested in","By the way"], ans:3 }
+        ]},
+      { id:"s3", part:"speaking", code:"S3", title:"Topic order", max:10,
+        sub:"Number the topics Kyle and Pam talk about in order (1–5). Choose a number for each topic.",
+        items:[
+          { q:"equipment", kind:"sel", pts:2, opts:NUMS, ans:"3" },
+          { q:"the instructor", kind:"sel", pts:2, opts:NUMS, ans:"5" },
+          { q:"rock climbing", kind:"sel", pts:2, opts:NUMS, ans:"1" },
+          { q:"prices", kind:"sel", pts:2, opts:NUMS, ans:"4" },
+          { q:"member discounts", kind:"sel", pts:2, opts:NUMS, ans:"2" }
+        ]},
+      { id:"s4", part:"speaking", code:"S4", title:"Phrasebook sentences", max:12,
+        sub:"Complete each sentence with a phrase from the Phrasebook.",
+        items:[
+          { q:"1. ______ music?", kind:"sel", pts:2, opts:PHRASES, ans:"Are you interested in" },
+          { q:"2. ______ there’s a concert on Saturday?", kind:"sel", pts:2, opts:PHRASES, ans:"Did you know that" },
+          { q:"3. ______ I have to buy tickets.", kind:"sel", pts:2, opts:PHRASES, ans:"That reminds me" },
+          { q:"4. ______ tickets, do you have your bus ticket?", kind:"sel", pts:2, opts:PHRASES, ans:"Speaking of" },
+          { q:"5. ______ thanks for waiting for me. I’m sorry I was late.", kind:"sel", pts:2, opts:PHRASES, ans:"By the way" },
+          { q:"6. ______ The bus is leaving. We’ve missed it!", kind:"sel", pts:2, opts:PHRASES, ans:"Oh, look" }
+        ]},
+      { id:"s5", part:"speaking", code:"S5", title:"Ending the conversation", max:4,
+        sub:"Kyle and Pam use TWO phrases to end the conversation. Choose each one.",
+        items:[
+          { q:"Ending phrase 1 — which phrase ends the conversation?", kind:"mcq", pts:2, opts:["I have to go.","Are you interested in rock climbing?","Did you know that members get a discount?"], ans:0 },
+          { q:"Ending phrase 2 — which other phrase ends the conversation?", kind:"mcq", pts:2, opts:["By the way, what’s the instructor like?","Nice talking to you.","Speaking of tickets, …"], ans:1 }
+        ]},
+      { id:"s6", part:"speaking", code:"S6", title:"What is each phrase for?", max:10,
+        sub:"Match each phrase to its job in a conversation.",
+        items:[
+          { q:"“Are you interested in …?”", kind:"sel", pts:2, opts:JOBS, ans:"Starting a new topic" },
+          { q:"“Did you know that …?”", kind:"sel", pts:2, opts:JOBS, ans:"Starting a new topic" },
+          { q:"“That reminds me, …”", kind:"sel", pts:2, opts:JOBS, ans:"Changing the topic" },
+          { q:"“By the way, …”", kind:"sel", pts:2, opts:JOBS, ans:"Changing the topic" },
+          { q:"“Nice talking to you.”", kind:"sel", pts:2, opts:JOBS, ans:"Ending the conversation" }
+        ]},
+      { id:"w1", part:"writing", code:"W1", title:"Article facts", max:6,
+        sub:"Read the skateboarding article again and choose the correct answer.",
+        items:[
+          { q:"When did skateboarding start?", kind:"mcq", pts:2, opts:["In the 1950s","In 1963","In the 1970s"], ans:0 },
+          { q:"How did skateboarding start?", kind:"mcq", pts:2, opts:["People copied it from a film in 2005.","Surfers wanted a way to surf on the pavement after they came out of the water.","It began as a competition sport in 1963."], ans:1 },
+          { q:"When did skateboarding become popular?", kind:"mcq", pts:2, opts:["In the 1950s","In 1963","In the 1970s"], ans:2 }
+        ]},
+      { id:"w2", part:"writing", code:"W2", title:"Paragraph order", max:5,
+        sub:"Put the article in order. For each paragraph, choose its position (1–5) in the finished article. Each correct position is worth 1 point.",
+        items:[
+          { q:"Paragraph a — “Another famous name is Alan Gelfand…”", kind:"sel", pts:1, opts:NUMS, ans:"4" },
+          { q:"Paragraph b — “The first skateboarding competition was held in 1963…”", kind:"sel", pts:1, opts:NUMS, ans:"2" },
+          { q:"Paragraph c — “Today, skateboarding is extremely popular…”", kind:"sel", pts:1, opts:NUMS, ans:"5" },
+          { q:"Paragraph d — “Most people say skateboarding started in California…”", kind:"sel", pts:1, opts:NUMS, ans:"1" },
+          { q:"Paragraph e — “This popularity was largely due to the Z-Boys…”", kind:"sel", pts:1, opts:NUMS, ans:"3" }
+        ]},
+      { id:"w3", part:"writing", code:"W3", title:"Match paragraphs to topics", max:5,
+        sub:"Which paragraph (a–e) covers each topic? Each correct match is worth 1 point.",
+        items:[
+          { q:"When and where the sport started", kind:"sel", pts:1, opts:LETTERS, ans:"d" },
+          { q:"How it became popular", kind:"sel", pts:1, opts:LETTERS, ans:"b" },
+          { q:"Names associated with the sport", kind:"sel", pts:1, opts:LETTERS, ans:"a" },
+          { q:"An interesting or unusual fact", kind:"sel", pts:1, opts:LETTERS, ans:"e" },
+          { q:"Information about the sport today", kind:"sel", pts:1, opts:LETTERS, ans:"c" }
+        ]},
+      { id:"w4", part:"writing", code:"W4", title:"Proofread — choose the correction", max:8,
+        sub:"These sentences come from the paragraph about the Z-Boys. Each one has a mistake. Choose the correct correction.",
+        items:[
+          { q:"“The Z-Boys became the more successful and original skateboarders of all time.” — Correct “the more successful”:", kind:"mcq", pts:2, opts:["the most successful","the successfulest","the more successfuller"], ans:0 },
+          { q:"“They helped making skateboarding popular around the world.” — Correct “helped making”:", kind:"mcq", pts:2, opts:["helped to making","helped makes","helped make"], ans:2 },
+          { q:"“They took their name from a shop called Jeff Ho Surfboards and Zephyr Productions, who sold surfboards and skateboards.” — Correct “who sold”:", kind:"mcq", pts:2, opts:["who sold (no change)","which sold","which selling"], ans:1 },
+          { q:"“The story of the Z-Boys was said in the 2005 film Lords of Dogtown.” — Correct “was said”:", kind:"mcq", pts:2, opts:["was told","was spoken","was talked"], ans:0 }
+        ]},
+      { id:"w5", part:"writing", code:"W5", title:"How to edit and proofread", max:6,
+        sub:"Which of these are real tips from the “How to edit and proofread a text” box?",
+        items:[
+          { q:"“Cut anything from your work that isn’t necessary.”", kind:"mcq", pts:2, opts:["Yes — a real tip from the How to box","No — NOT a tip"], ans:0 },
+          { q:"“Use as many long, difficult words as possible.”", kind:"mcq", pts:2, opts:["Yes — a real tip from the How to box","No — NOT a tip"], ans:1 },
+          { q:"“Ask someone else to read your work too.”", kind:"mcq", pts:2, opts:["Yes — a real tip from the How to box","No — NOT a tip"], ans:0 }
+        ]},
+      { id:"w6", part:"writing", code:"W6", title:"Choose the best summary", max:10,
+        sub:"Each correct answer here is worth 5 points.",
+        items:[
+          { q:"Best summary (maximum 35 words) of the paragraph about the Z-Boys:", kind:"mcq", pts:5, opts:[
+            "The Z-Boys were skateboarders. They had a name from a shop. A film was made in 2005 about some skateboarders, and it starred an actor called Heath Ledger, who was famous.",
+            "The Z-Boys, the most successful and original skateboarders of all time, took their name from a Los Angeles surf shop, and their story was told in the 2005 film Lords of Dogtown.",
+            "Heath Ledger starred in a 2005 film. The Z-Boys bought surfboards and skateboards from a shop called Jeff Ho Surfboards and Zephyr Productions in Los Angeles, California, USA."
+          ], ans:1 },
+          { q:"Best one-sentence summary of the whole article:", kind:"mcq", pts:5, opts:[
+            "Skateboarding was banned in Norway.",
+            "Alan Gelfand created the ollie, the first trick people learn.",
+            "Skateboarding began in 1950s California when surfers took to the pavement, became popular in the 1970s thanks to groups like the Z-Boys, and is now extremely popular worldwide."
+          ], ans:2 }
+        ]},
+      { id:"w7", part:"writing", code:"W7", title:"Write your paragraph", max:10,
+        sub:"Free writing — type your paragraph in the box. Your points are worked out automatically from the rules shown under the box.",
+        items:[
+          { q:"Choose a sport (NOT skateboarding) and write a paragraph about the history of the sport — about 130 words. Say: when and where it started, how it became popular, and something about the sport today.", kind:"text", pts:10 }
+        ]}
+    ];
+
+    var TOTAL_ITEMS = 0, TOTAL_MAX = 0;
+    SECTIONS.forEach(function(s){ TOTAL_ITEMS += s.items.length; TOTAL_MAX += s.max; });
+
+    var $ = function(id){ return document.getElementById(id); };
+    var studentName = "", startedAt = 0, timerInt = null, submitted = false, warned = false;
+    var TIME_LIMIT = 30 * 60;
+
+    function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+    /* ---------- Render questions ---------- */
+    function renderSections(){
+      var spk = "", wrt = "";
+      SECTIONS.forEach(function(sec){
+        var html = '<div class="card"><div class="sec-head"><h3>' + sec.code + " · " + esc(sec.title) +
+          '</h3><span class="spts">' + sec.max + ' pts</span></div><p class="sec-sub">' + esc(sec.sub) + "</p>";
+        sec.items.forEach(function(it, ii){
+          var qid = sec.id + "_" + ii;
+          html += '<div class="q" id="wrap_' + qid + '"><div class="qtext">' + (it.kind === "text" ? "" : '<span class="qn">' + (ii + 1) + ".</span>") + esc(it.q) + "</div>";
+          if (it.kind === "mcq"){
+            html += '<div class="opts" role="radiogroup">';
+            it.opts.forEach(function(op, oi){
+              html += '<label class="opt" id="opt_' + qid + "_" + oi + '"><input type="radio" name="' + qid + '" value="' + oi + '"><span>' + esc(op) + "</span></label>";
+            });
+            html += "</div>";
+          } else if (it.kind === "sel") {
+            html += '<select class="qsel" id="sel_' + qid + '" aria-label="' + esc(it.q) + '"><option value="">— choose —</option>';
+            it.opts.forEach(function(op){ html += '<option value="' + esc(op) + '">' + esc(op) + "</option>"; });
+            html += "</select>";
+          } else if (it.kind === "text") {
+            html += '<textarea class="qtext" id="ta_' + qid + '" rows="8" placeholder="Write your paragraph here…"></textarea>';
+            html += '<div class="wcount" id="wc_' + qid + '">0 words — aim for about 130 words (you need at least 60).</div>';
+            html += '<div class="rules"><b>How your 10 points are earned (checked automatically when you submit):</b><ul>' +
+              '<li><b>Length — up to 4 pts:</b> 100–130 words = 4 pts · 60–99 words = 2 pts · under 60 or over 160 words = 0 pts.</li>' +
+              '<li><b>History words — up to 3 pts:</b> use at least 4 DIFFERENT words from the word bank below = 3 pts (2–3 different words = 1 pt).</li>' +
+              '<li><b>Time anchor — 3 pts:</b> mention a year or a decade, e.g. 1963, in 1896, the 1970s.</li></ul>' +
+              '<p class="small" style="margin:8px 0 0"><b>Word bank:</b> started · began · invented · first · became · popular · century · years ago · competition · famous · today · now</p></div>';
+          }
+          html += '<div class="feedback" id="fb_' + qid + '"></div></div>';
+        });
+        html += "</div>";
+        if (sec.part === "speaking") spk += html; else wrt += html;
+      });
+      $("speakingSections").innerHTML = spk;
+      $("writingSections").innerHTML = wrt;
+      document.querySelectorAll("#quiz input[type=radio], #quiz select").forEach(function(el){
+        el.addEventListener("change", updateProgress);
+      });
+      document.querySelectorAll("#quiz textarea.qtext").forEach(function(el){
+        el.addEventListener("input", function(){ updateProgress(); updateWordCount(el); });
+      });
+    }
+
+    /* ---------- Free writing (W7) ---------- */
+    function countWords(t){
+      t = (t || "").trim();
+      if (!t) return 0;
+      return t.split(/\s+/).length;
+    }
+    function updateWordCount(el){
+      var wc = $("wc_" + el.id.replace("ta_", ""));
+      if (!wc) return;
+      var n = countWords(el.value);
+      var msg = n + (n === 1 ? " word" : " words");
+      if (n === 0) msg += " — aim for about 130 words (you need at least 60).";
+      else if (n < 60) msg += " — too short: under 60 words scores 0 for length. Keep writing!";
+      else if (n < 100) msg += " — good start: 100–130 words earns the full length points.";
+      else if (n <= 130) msg += " — perfect length! ✓";
+      else if (n <= 140) msg += " — a little long: try to finish near 130 words.";
+      else if (n <= 160) msg += " — too long: over 160 words scores 0 for length. Cut some words!";
+      else msg += " — far too long: over 160 words scores 0 for length. Cut some words!";
+      wc.textContent = msg;
+      wc.className = "wcount" + (n >= 100 && n <= 130 ? " okc" : ((n > 0 && n < 60) || n > 140 ? " warn" : ""));
+    }
+    var W7_BANK = ["started", "began", "invented", "first", "became", "popular", "century", "years ago", "competition", "famous", "today", "now"];
+    function scoreW7(text){
+      text = text || "";
+      var words = countWords(text);
+      var lenPts = 0;
+      if (words >= 100 && words <= 130) lenPts = 4;
+      else if (words >= 60 && words <= 99) lenPts = 2;
+      var low = " " + text.toLowerCase().replace(/[^a-z0-9\s]/g, " ") + " ";
+      var used = [];
+      W7_BANK.forEach(function(w){
+        var hit;
+        if (w === "years ago") hit = /\byears\s+ago\b/.test(low);
+        else hit = new RegExp("\\b" + w + "\\b").test(low);
+        if (hit) used.push(w);
+      });
+      var bankPts = used.length >= 4 ? 3 : (used.length >= 2 ? 1 : 0);
+      var anchor = /(^|\D)(1[0-9]{3}|20[0-9]{2})(\D|$)/.test(text) ||
+        /\b(1[5-9]\d0|20\d0)s\b/i.test(text) ||
+        /\b(fifties|sixties|seventies|eighties|nineties)\b/i.test(text);
+      var anchorPts = anchor ? 3 : 0;
+      return { words: words, lenPts: lenPts, bankPts: bankPts, anchorPts: anchorPts, used: used, total: lenPts + bankPts + anchorPts };
+    }
+
+    function getAnswer(sec, ii){
+      var it = sec.items[ii], qid = sec.id + "_" + ii;
+      if (it.kind === "text"){
+        var ta = $("ta_" + qid);
+        var v = ta ? ta.value.trim() : "";
+        return v === "" ? null : v;
+      }
+      if (it.kind === "mcq"){
+        var r = document.querySelector('input[name="' + qid + '"]:checked');
+        return r ? parseInt(r.value, 10) : null;
+      }
+      var sel = $("sel_" + qid);
+      return sel && sel.value !== "" ? sel.value : null;
+    }
+    function isCorrect(sec, ii){
+      var a = getAnswer(sec, ii);
+      if (a === null) return false;
+      return a === sec.items[ii].ans;
+    }
+    function answeredCount(){
+      var n = 0;
+      SECTIONS.forEach(function(sec){ sec.items.forEach(function(it, ii){ if (getAnswer(sec, ii) !== null) n++; }); });
+      return n;
+    }
+    function updateProgress(){
+      var n = answeredCount();
+      $("answeredChip").textContent = "Answered " + n + " / " + TOTAL_ITEMS;
+      $("submitProg").textContent = "Answered " + n + " / " + TOTAL_ITEMS;
+      document.querySelectorAll("select.qsel").forEach(function(s){ s.classList.toggle("answered", s.value !== ""); });
+    }
+
+    /* ---------- Timer ---------- */
+    function fmt(sec){
+      var m = Math.floor(sec / 60), s = sec % 60;
+      return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    }
+    function tick(){
+      var left = TIME_LIMIT - Math.floor((Date.now() - startedAt) / 1000);
+      if (left < 0) left = 0;
+      var chip = $("timerChip");
+      chip.textContent = "⏱ " + fmt(left);
+      if (left <= 300 && left > 0){
+        chip.classList.add("warn5");
+        if (!warned){ warned = true; $("warnBanner").hidden = false; showToast("5 minutes left!"); }
+      }
+      if (left <= 60) { chip.classList.remove("warn5"); chip.classList.add("danger"); }
+      if (left <= 0){ clearInterval(timerInt); submitQuiz(true); }
+    }
+
+    /* ---------- Flow ---------- */
+    $("startBtn").addEventListener("click", function(){
+      var name = $("studentName").value.trim();
+      if (name.length < 2){ $("nameErr").textContent = "Please type your full name first."; $("studentName").focus(); return; }
+      $("nameErr").textContent = "";
+      studentName = name;
+      $("gate").hidden = true;
+      $("quiz").hidden = false;
+      $("answeredChip").hidden = false;
+      $("timerChip").hidden = false;
+      startedAt = Date.now();
+      tick();
+      timerInt = setInterval(tick, 500);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    $("studentName").addEventListener("keydown", function(e){ if (e.key === "Enter") $("startBtn").click(); });
+
+    $("submitBtn").addEventListener("click", function(){
+      var n = answeredCount();
+      $("confirmText").textContent = n === TOTAL_ITEMS
+        ? "You have answered all " + TOTAL_ITEMS + " questions. Submit now?"
+        : "You have answered " + n + " of " + TOTAL_ITEMS + " questions. Unanswered questions score 0. Submit anyway?";
+      $("confirmOverlay").hidden = false;
+    });
+    $("confirmNo").addEventListener("click", function(){ $("confirmOverlay").hidden = true; });
+    $("confirmYes").addEventListener("click", function(){ $("confirmOverlay").hidden = true; submitQuiz(false); });
+
+    function bandFor(total){
+      if (total >= 90) return "Outstanding!";
+      if (total >= 75) return "Very good";
+      if (total >= 60) return "Good";
+      if (total >= 40) return "Fair — keep practising";
+      return "Keep trying — practise and try again";
+    }
+
+    function submitQuiz(auto){
+      if (submitted) return;
+      submitted = true;
+      if (timerInt) clearInterval(timerInt);
+      var elapsed = Math.min(TIME_LIMIT, Math.floor((Date.now() - startedAt) / 1000));
+      var timeUsed = fmt(elapsed);
+      var sScore = 0, wScore = 0;
+      var w7Text = "", w7Detail = null;
+
+      SECTIONS.forEach(function(sec){
+        sec.items.forEach(function(it, ii){
+          var qid = sec.id + "_" + ii, a = getAnswer(sec, ii);
+          var fb = $("fb_" + qid);
+          if (it.kind === "text"){
+            w7Text = a === null ? "" : a;
+            w7Detail = scoreW7(w7Text);
+            wScore += w7Detail.total;
+            fb.innerHTML = '<span class="' + (w7Detail.total > 0 ? "ok" : "no") + '">Your paragraph: ' + w7Detail.words + " words — " + w7Detail.total + " / 10 pts</span><br>" +
+              '<span class="ans">Length: ' + w7Detail.lenPts + " / 4 · History words: " + w7Detail.bankPts + " / 3 (you used: " + (w7Detail.used.length ? esc(w7Detail.used.join(", ")) : "none from the word bank") + ") · Time anchor: " + w7Detail.anchorPts + " / 3</span>" +
+              (w7Text ? '<div class="para-echo">' + esc(w7Text) + "</div>" : '<br><span class="ans">(No paragraph written.)</span>');
+            fb.classList.add("show");
+            var taEl = $("ta_" + qid);
+            if (taEl) taEl.disabled = true;
+            return;
+          }
+          var ok = isCorrect(sec, ii);
+          if (ok){ if (sec.part === "speaking") sScore += it.pts; else wScore += it.pts; }
+          var correctText = it.kind === "mcq" ? it.opts[it.ans] : it.ans;
+          if (ok){
+            fb.innerHTML = '<span class="ok">✓ Correct (+' + it.pts + " pts)</span>";
+          } else {
+            var yours = a === null ? "(no answer)" : (it.kind === "mcq" ? it.opts[a] : a);
+            fb.innerHTML = '<span class="no">✗ Not quite (0 pts).</span> <span class="ans">Your answer: ' + esc(yours) + ' · Correct answer: ' + esc(correctText) + "</span>";
+          }
+          fb.classList.add("show");
+          if (it.kind === "mcq"){
+            it.opts.forEach(function(op, oi){
+              var lab = $("opt_" + qid + "_" + oi);
+              if (oi === it.ans) lab.classList.add("correct");
+              else if (a === oi) lab.classList.add("wrong");
+            });
+            document.querySelectorAll('input[name="' + qid + '"]').forEach(function(r){ r.disabled = true; });
+          } else {
+            var sel = $("sel_" + qid);
+            sel.classList.add(ok ? "correct" : "wrong");
+            sel.disabled = true;
+          }
+        });
+      });
+
+      var total = sScore + wScore;
+      $("submitBtn").disabled = true;
+      $("totalScore").textContent = total;
+      $("bandLabel").textContent = bandFor(total);
+      $("resultName").textContent = studentName + (auto ? " · Time ran out — submitted automatically" : "");
+      $("scoreS").textContent = sScore + " / 50";
+      $("scoreW").textContent = wScore + " / 50";
+      $("barS").style.width = (sScore * 2) + "%";
+      $("barW").style.width = (wScore * 2) + "%";
+      $("timeUsedLine").textContent = "Time used: " + timeUsed + " of 30:00";
+      if (w7Detail){
+        $("w7Review").hidden = false;
+        $("w7Meta").textContent = w7Detail.words + " words · W7 score: " + w7Detail.total + " / 10 (Length " + w7Detail.lenPts + "/4 · History words " + w7Detail.bankPts + "/3 · Time anchor " + w7Detail.anchorPts + "/3)";
+        $("w7Echo").textContent = w7Text === "" ? "(No paragraph written.)" : w7Text;
+      }
+      $("results").hidden = false;
+      $("timerChip").classList.remove("danger", "warn5");
+      $("timerChip").textContent = "Submitted";
+      $("results").scrollIntoView({ behavior: "smooth" });
+
+      window.__lastResult = { name: studentName, speaking: sScore, writing: wScore, total: total, band: bandFor(total), timeUsed: timeUsed,
+        writingText: w7Text, w7Score: w7Detail ? w7Detail.total : 0, w7Words: w7Detail ? w7Detail.words : 0 };
+
+      dispatch({ name: studentName, vocab: sScore, reading: wScore, total: total, timeUsed: timeUsed, quiz: QUIZ_NAME, writingText: w7Text });
+    }
+
+    function dispatch(payload){
+      var note = $("dispatchNote");
+      try {
+        fetch(sheetUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify(payload),
+          keepalive: true
+        });
+        note.className = "dispatch ok";
+        note.textContent = "✓ Your result was dispatched to your teacher’s score sheet. (The sheet itself is the final record — your teacher will confirm it arrived.)";
+      } catch (e) {
+        note.className = "dispatch fail";
+        note.textContent = "✗ Your result could NOT be sent to the score sheet. Please show this screen to your teacher so your score can be recorded.";
+      }
+    }
+
+    /* ---------- Copy / download / restart ---------- */
+    function resultText(){
+      var r = window.__lastResult;
+      if (!r) return "";
+      return "Speaking and Writing Quiz - At the Sports Center (Go Beyond 4, Unit 1)\n" +
+        "Name: " + r.name + "\n" +
+        "Total: " + r.total + " / 100\n" +
+        "Speaking: " + r.speaking + " / 50\n" +
+        "Writing: " + r.writing + " / 50\n" +
+        "Band: " + r.band + "\n" +
+        "Time used: " + r.timeUsed + " / 30:00\n" +
+        "Date: " + new Date().toLocaleString() + "\n\n" +
+        "W7 — Write your paragraph: " + r.w7Score + " / 10 (" + r.w7Words + " words)\n" +
+        (r.writingText ? r.writingText : "(No paragraph written.)");
+    }
+    $("copyBtn").addEventListener("click", function(){
+      var t = resultText();
+      function done(){ showToast("Result copied"); }
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(t).then(done, function(){ fallbackCopy(t); done(); });
+      } else { fallbackCopy(t); done(); }
+    });
+    function fallbackCopy(t){
+      var ta = document.createElement("textarea");
+      ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    $("downloadBtn").addEventListener("click", function(){
+      var blob = new Blob([resultText()], { type: "text/plain" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "speaking-writing-quiz-result.txt";
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
+    });
+    $("restartBtn").addEventListener("click", function(){ location.reload(); });
+
+    /* ---------- Toast ---------- */
+    var toastTimer = null;
+    function showToast(msg){
+      var t = $("toast");
+      t.textContent = msg; t.hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ t.hidden = true; }, 2600);
+    }
+
+    /* ---------- Teacher mode ---------- */
+    $("teacherBtn").addEventListener("click", function(){
+      if (!$("teacherPanel").hidden){ $("teacherPanel").hidden = true; $("teacherBtn").textContent = "Teacher mode"; return; }
+      $("pwErr").textContent = ""; $("pwInput").value = "";
+      $("pwOverlay").hidden = false;
+      setTimeout(function(){ $("pwInput").focus(); }, 50);
+    });
+    $("pwCancel").addEventListener("click", function(){ $("pwOverlay").hidden = true; });
+    function tryPassword(){
+      if ($("pwInput").value === TEACHER_PASSWORD){
+        $("pwOverlay").hidden = true;
+        $("teacherPanel").hidden = false;
+        $("teacherBtn").textContent = "Hide teacher panel";
+        buildKey();
+        $("teacherPanel").scrollIntoView({ behavior: "smooth" });
+      } else {
+        $("pwErr").textContent = "Wrong password — try again.";
+      }
+    }
+    $("pwGo").addEventListener("click", tryPassword);
+    $("pwInput").addEventListener("keydown", function(e){ if (e.key === "Enter") tryPassword(); });
+
+    $("sheetUrlInput").value = DEFAULT_SHEET_URL;
+    $("saveSheetBtn").addEventListener("click", function(){
+      var v = $("sheetUrlInput").value.trim();
+      if (v){ sheetUrl = v; showToast("Sheet URL updated for new submissions"); }
+    });
+
+    var keyBuilt = false;
+    function buildKey(){
+      if (keyBuilt) return;
+      keyBuilt = true;
+      var html = "";
+      SECTIONS.forEach(function(sec){
+        html += "<h4>" + sec.code + " · " + esc(sec.title) + " (" + sec.max + " pts)</h4><ol class='keylist'>";
+        sec.items.forEach(function(it){
+          if (it.kind === "text"){
+            html += "<li>Free writing — auto-checked by these simple rules only: length 100–130 words = 4 pts (60–99 words = 2 pts; under 60 or over 160 words = 0 pts) · at least 4 DIFFERENT history word-bank words (started, began, invented, first, became, popular, century, years ago, competition, famous, today, now) = 3 pts (2–3 different words = 1 pt) · a year or decade mentioned (e.g. 1963, the 1970s) = 3 pts. Total 10 pts. Read the paragraph itself in the student's downloaded result if you want to judge the writing quality.</li>";
+            return;
+          }
+          var correctText = it.kind === "mcq" ? it.opts[it.ans] : it.ans;
+          html += "<li>" + esc(it.q) + " → <b>" + esc(correctText) + "</b> (" + it.pts + " pts)</li>";
+        });
+        html += "</ol>";
+      });
+      html += "<p class='small muted' style='margin-top:14px'>Totals: Speaking S1 6 + S2 8 + S3 10 + S4 12 + S5 4 + S6 10 = 50 · Writing W1 6 + W2 5 + W3 5 + W4 8 + W5 6 + W6 10 + W7 10 = 50 · Quiz total = 100.</p>";
+      $("answerKey").innerHTML = html;
+    }
+
+    renderSections();
+    updateProgress();
+    </script>
+  </body>
+</html>
